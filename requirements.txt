@@ -1,0 +1,16 @@
+Flask
+Flask-SQLAlchemy
+Flask-WTF
+Flask-Mail
+Flask-Assets
+Flask-Uploads
+PIL
+pytz
+markdown
+tweepy
+bitlyapi
+whoosh
+twill
+Flask-Testing
+coverage
+bleach

@@ -1,0 +1,79 @@
+{% extends "inc/layout.html" %}
+{% block titletags -%}
+  <title>{{ config['SITE_TITLE'] }}</title>
+  <meta name="DC.title" content="{{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
+
+{% block pageheaders %}
+{%- if jobtype %}<link rel="alternate" type="application/atom+xml"  title="{{ jobtype.title }} – {{ config['SITE_TITLE']|e }}" href="{{ url_for('feed_by_type', slug=jobtype.slug) }}" />{% endif -%}
+{%- if jobcategory %}<link rel="alternate" type="application/atom+xml"  title="{{ jobcategory.title }} – {{ config['SITE_TITLE']|e }}" href="{{ url_for('feed_by_category', slug=jobcategory.slug) }}" />{% endif -%}
+{%- if md5sum %}<link rel="alternate" type="application/atom+xml" title="Jobs at {{ employer_name }} – {{ config['SITE_TITLE'] }}" href="{{ url_for('feed_by_email', md5sum=md5sum) }}" />{% endif -%}
+{% endblock %}
+
+{% block header %}
+  <p id="pitch">
+   Subheading goes here.................<br /> <a href="{{ url_for('newjob')|usessl }}">Post a notice &rarr;</a>
+  </p>
+{% endblock %}
+
+{% block content %}
+  {# {% include "inc/logo.html" %} #}
+  <ul id="stickie-area">
+    {% if jobtype or jobcategory %}
+      <li id="filtered" class="stickie">
+        <a href="{{ url_for('index') }}">
+          <span class="filtered">
+            You are viewing
+            {% if jobtype %}{{ jobtype.title.lower() }}{% endif %}
+            {% if jobcategory %}{{ jobcategory.title.lower() }}{% endif %}
+            jobs. View all jobs?
+          </span>
+        </a>
+      </li>
+    {%- elif md5sum %}
+      <li id="filtered" class="stickie">
+        <a href="{{ url_for('index') }}">
+          <span class="filtered">
+            You are viewing jobs at {{ employer_name }}. View all jobs?
+          </span>
+        </a>
+      </li>
+    {%- else -%}
+      <li id="newpost" class="stickie">
+        <form action="{{ url_for('newjob')|usessl }}" method="POST">
+          <input type="hidden" name="_charset_"/>
+          <input type="hidden" name="form.id" value="newheadline"/>
+          <label id="newpost_title" for="newpost_headline">Post a job:</label>
+          <textarea id="newpost_headline" name="job_headline" class="expand">Awesome Coder wanted at Awesome Company</textarea>
+          <div id="newpost_details"><input type="submit" value="Add details &rarr;"/></div>
+        </form>
+      </li>
+    {%- endif -%}
+    {%- for post in posts -%}
+      <li class="stickie">
+        <a href="{{ url_for('jobdetail', hashid=post.hashid) }}" rel="bookmark">
+          <span class="location">{{ post.location }}</span>
+          <span class="date">{{ post.datetime|shortdate }}</span>
+          <span class="headline">{{ post.headline }}</span>
+		      <span class="company">{{ post.company_name }}</span>
+		      {%- if post.sticky %}<span class="new">Sticky!</span>{% else %}
+		      {%- if now - post.datetime < newlimit %}<span class="new">New!</span>{% endif %}{% endif %}
+        </a>
+      </li>
+    {%- else -%}
+      <li class="stickie" id="nojobs">
+        Sorry, no jobs listed.
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+{% block footerscripts %}
+<script type="text/javascript">
+  $(function() {
+    $("#newpost_details").hide();
+    $("#newpost_headline").focus(function() {
+      $("#newpost_details").slideDown();
+    });
+  });
+</script>
+{% endblock %}

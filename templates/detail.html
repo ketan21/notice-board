@@ -1,0 +1,138 @@
+{% extends "inc/layout.html" %}
+{% from "inc/forms.html" import ajaxform %}
+{% block title %}{{ post.headline|e }}{% endblock %}
+{% block content %}
+{% if post.is_draft() %}
+<div id="guide">
+  <div class="guidecontent">
+    <h2>Review this listing</h2>
+    <p>
+      This is a preview. It is only visible to you. You may <a href="{{ url_for('editjob', hashid=post.hashid, key=post.edit_key)|usessl }}">edit again</a> or confirm this listing.
+    </p>
+    <form action="{{ url_for('confirm', hashid=post.hashid)|usessl }}" method="POST">
+      <input type="submit" value="This looks good, confirm it"/>
+    </form>
+  </div>
+</div>
+{% elif post.is_flagged() %}
+<div id="guide">
+  <div class="guidecontent">
+    <h2>This listing has been flagged for review</h2>
+    <p>
+      Previous viewers of this listing flagged it for review by a moderator.
+      A review is currently pending.
+    </p>
+{% endif %}
+
+<div id="sheet">
+  <div class="section first">
+    <h1>{{ post.headline }}</h1>
+    {% if post.company_logo %}<img class="post-company-logo" alt="Logo" src="{{ url_for('logoimage', hashid=post.hashid) }}"/>{% endif %}
+    <p class="post-date">Posted {{ post.datetime|longdate }}</p>
+    <p id="company-info">
+      <span class="post-company-name">{{ post.company_name }}</span><br/>
+      <span class="post-location">{{ post.location }}{% if post.relocation_assist %}
+        <em>(relocation assistance available)</em>{% endif %}</span><br/>
+      {%- if post.company_url -%}
+        <span class="post-company-url">
+          <a href="{{ post.company_url }}" target="_blank" rel="nofollow">{{ post.company_url|cleanurl }}</a>
+        </span>
+      {%- endif %}
+    </p>
+    <p id="post-meta">
+      <a href="{{ url_for('browse_by_type', slug=post.type.slug) }}">{{ post.type.title }}</a> /
+      <a href="{{ url_for('browse_by_category', slug=post.category.slug) }}">{{ post.category.title }}</a>
+      {%- if post.md5sum %}
+        / <a href="{{ url_for('browse_by_email', md5sum=post.md5sum) }}">All jobs at {{ post.company_name }}</a>
+      {% endif -%}      
+    </p>
+  </div>
+  <div class="section columns">
+    <div id="detailed-info">
+      {{ post.description|safe }}
+      {% if post.perks %}
+        <h2>Job Perks</h2>
+        {{ post.perks|safe }}
+      {% endif %}
+    </div>
+    <!-- 
+      #################  Removed Sidebar ###################
+    <div id="detail-sidebar">
+      <ul>
+        <li><a id="sidebar-email" href="mailto:?subject=Job%3A%20{{ post.headline|urlquote }}&amp;body={{ request.url|urlquote }}">Email this</a></li>
+        <li><a id="sidebar-tweet" target="_blank" href="http://twitter.com/share?url={{ request.url|urlquote }}&amp;counturl={{ request.url|urlquote }}&amp;via=hasjob&amp;related=hasjob:HasGeek%20Job%20Board&amp;text=Job%3A%20{{ post.headline|urlquote }}">Tweet this <span id="tweet-count"></span></a></li>
+        {#<li><a id="sidebar-share" href="#share">Share this</a></li>#}
+        <li>
+          <a id="sidebar-report" href="#report">Report this</a>
+          <div class="popup-box" id="report">
+            <a class="close-popup" href="#">&#10005;</a>
+            <h2>What’s wrong with it?</h2>
+            {% include "inc/reportform.html" %}
+          </div>
+        </li>
+      </ul>
+    </div> -->
+  </div>
+  <div class="section" id="apply-info">
+    <h2>Apply for this position</h2>
+    <p>{{ post.how_to_apply|scrubemail(('z', 'y')) }}</p>
+  </div>
+  {% if post.hr_contact is not none %}{# Don't display notice on old listings #}
+    <div class="section" id="recruiter-notice">
+    {% if post.hr_contact %}
+      <p>
+        It is <strong>OK</strong> for recruiters, HR consultants, and other intermediaries to contact this employer about this position.
+      </p>
+    {% else %}
+      <p>
+        It is <strong>NOT OK</strong> for recruiters, HR consultants, and other intermediaries to contact this employer about this position.
+      </p>
+    {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+<!-- {% block footerscripts %}
+<script type="text/javascript">
+  $(function() {
+    jQuery.getJSON(
+      'http://urls.api.twitter.com/1/urls/count.json?url={{ request.url|urlquote }}&callback=?',
+      function (data) {
+        if (data.count>0) {
+          $("#tweet-count").html('('+data.count+')');
+        }
+      }
+    );
+    $("#sidebar-tweet").click(function() {
+      var d=550,a=450;
+      var c=screen.height;
+      var b=screen.width;
+      var h=Math.round((b/2)-(d/2));
+      var g=0;
+      if (c>a) {
+        g=Math.round((c/2)-(a/2))
+      }
+      window.open($(this).attr("href"), "twitter_tweet",
+        "left="+h+",top="+g+",width="+d+",height="+a+",personalbar=0,toolbar=0,scrollbars=1,resizable=1");
+      return false;
+    });
+  });
+  $(function() {
+    radioHighlight('report_code', 'selected');
+    $("body").click(function() {
+      // Hide popups
+      $("#report").fadeOut("fast");
+    });
+    $("#report").click(function(event) {
+      // Prevent clicks within popup from hiding it
+      event.stopPropagation();
+    });
+    $("#sidebar-report").click(function() {
+      $("#report").fadeToggle("fast");
+      return false;
+    });
+  });
+</script>
+{{ ajaxform('reportform') }}
+{% endblock %}
+ -->
