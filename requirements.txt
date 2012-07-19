@@ -15,3 +15,4 @@ Flask-Testing
 coverage
 bleach
 psycopg2
+gunicorn
