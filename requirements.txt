@@ -14,3 +14,4 @@ twill
 Flask-Testing
 coverage
 bleach
+psycopg2
