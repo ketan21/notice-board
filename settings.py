@@ -5,7 +5,7 @@ TYPEKIT_CODE=''
 #: Google Analytics code UA-XXXXXX-X
 GA_CODE=''
 #: Database backend
-SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+SQLALCHEMY_DATABASE_URI = 'postgres://gevlnilifwrvms:ViU2KPDGLy8tnszkdA9Q2FI5T1@ec2-23-21-85-231.compute-1.amazonaws.com:5432/ddlsbu4b64iksu'
 #: Secret key
 SECRET_KEY = 'f12ea7d957fc83e9230224d7183af3e06fc47297bb'
 #: Timezone
