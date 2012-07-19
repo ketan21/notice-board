@@ -22,7 +22,7 @@ def configure():
 #    views.mail.init_app(app)
 
     log_formatter = loghandler.LocalVarFormatter()
-    file_handler = logging.FileHandler(app.config['LOGFILE'])
+    file_handler = logging.FileHandler("error.log")
     file_handler.setFormatter(log_formatter)
     file_handler.setLevel(logging.WARNING)
     app.logger.addHandler(file_handler)
